@@ -1,0 +1,77 @@
+
+// Startup applications
+spawn-at-startup "waybar"
+spawn-at-startup "swaybg" "-m" "fill" "-i" "/home/abhiraj/Pictures/bluejapan.png"
+spawn-at-startup "quickshell" "/usr/bin/quickshell"
+
+// Appearance and window layout
+layout {
+    gaps 10
+
+    center-focused-column "never"
+
+    default-column-width {
+        proportion 0.5
+    }
+
+
+    border {
+        width 1
+        active-color "#172235"
+        inactive-color "#0D1422"
+        urgent-color "#8B3030"
+    }
+
+    background-color "#080B12"
+}
+
+// Animations
+
+animations {
+    workspace-switch {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.001
+    }
+
+    window-open {
+        duration-ms 180
+        curve "ease-out-expo"
+    }
+
+    window-close {
+        duration-ms 150
+        curve "ease-out-quad"
+    }
+}
+
+// Keyboard shortcuts
+
+binds {
+    "Mod+Return" { spawn "alacritty"; }
+    "Mod+A" { spawn "rofi" "-show" "drun"; }
+    "Mod+S" { spawn "wlogout"; }
+
+    "Mod+Q" { close-window; }
+    "Mod+Shift+E" { quit; }
+
+    "Mod+Left" { focus-column-left; }
+    "Mod+Right" { focus-column-right; }
+    "Mod+Up" { focus-window-up; }
+    "Mod+Down" { focus-window-down; }
+
+    "Mod+Shift+Left" { move-column-left; }
+    "Mod+Shift+Right" { move-column-right; }
+
+    "Mod+1" { focus-workspace 1; }
+    "Mod+2" { focus-workspace 2; }
+    "Mod+3" { focus-workspace 3; }
+    "Mod+4" { focus-workspace 4; }
+
+    "Mod+Shift+1" { move-column-to-workspace 1; }
+    "Mod+Shift+2" { move-column-to-workspace 2; }
+    "Mod+Shift+3" { move-column-to-workspace 3; }
+    "Mod+Shift+4" { move-column-to-workspace 4; }
+
+    "Mod+F" { maximize-column; }
+    "Mod+Shift+F" { fullscreen-window; }
+}
+

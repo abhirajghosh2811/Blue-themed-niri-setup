@@ -1,0 +1,392 @@
+
+#!/usr/bin/env bash
+set -e
+
+# Back up existing configuration files.
+//backup="$HOME/.config-backup/niri-$(date +%Y%m%d-%H%M%S)"
+//mkdir -p "$backup"
+
+for app in niri waybar rofi kitty; do
+    if [ -d "$HOME/.config/$app" ]; then
+        cp -a "$HOME/.config/$app" "$backup/"
+    fi
+done
+
+mkdir -p ~/.config/{niri,waybar,rofi,kitty}
+
+# NIRI
+cat > ~/.config/niri/config.kdl <<'KDL'
+input {
+    keyboard {
+        repeat-delay 300
+        repeat-rate 40
+    }
+    touchpad {
+        tap
+        natural-scroll
+    }
+}
+
+layout {
+    gaps 8
+    center-focused-column "on-overflow"
+
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+
+    default-column-width { proportion 0.5; }
+
+    focus-ring {
+        width 2
+        active-color "#60a5fa"
+        inactive-color "#26334d"
+    }
+
+    background-color "#080d19"
+}
+
+prefer-no-csd
+
+screenshot-path "~/Pictures/Screenshots/Screenshot-%Y-%m-%d-%H-%M-%S.png"
+
+spawn-at-startup "waybar"
+
+window-rule {
+    geometry-corner-radius 10
+    clip-to-geometry true
+}
+
+animations {
+    workspace-switch {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+    horizontal-view-movement {
+        spring damping-ratio=1.0 stiffness=800 epsilon=0.0001
+    }
+    window-open {
+        duration-ms 180
+        curve "ease-out-quad"
+    }
+    window-close {
+        duration-ms 150
+        curve "ease-out-quad"
+    }
+}
+
+binds {
+    // Applications
+    Mod+Return { spawn "kitty"; }
+    Mod+D { spawn "rofi" "-show" "drun"; }
+    Mod+Shift+D { spawn "rofi" "-show" "run"; }
+
+    // Windows
+    Mod+Q { close-window; }
+    Mod+F { maximize-column; }
+    Mod+Shift+F { fullscreen-window; }
+    Mod+V { toggle-window-floating; }
+    Mod+O { toggle-overview; }
+
+    // Focus: arrows or Vim-style HJKL
+    Mod+Left  { focus-column-left; }
+    Mod+Right { focus-column-right; }
+    Mod+Up    { focus-window-up; }
+    Mod+Down  { focus-window-down; }
+
+    Mod+H { focus-column-left; }
+    Mod+L { focus-column-right; }
+    Mod+K { focus-window-up; }
+    Mod+J { focus-window-down; }
+
+    // Move windows
+    Mod+Shift+Left  { move-column-left; }
+    Mod+Shift+Right { move-column-right; }
+    Mod+Shift+H { move-column-left; }
+    Mod+Shift+L { move-column-right; }
+    Mod+Shift+K { move-window-up; }
+    Mod+Shift+J { move-window-down; }
+
+    // Resize
+    Mod+R { switch-preset-column-width; }
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Equal { set-column-width "+10%"; }
+
+    // Workspaces 1–9
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+    Mod+Shift+6 { move-column-to-workspace 6; }
+    Mod+Shift+7 { move-column-to-workspace 7; }
+    Mod+Shift+8 { move-column-to-workspace 8; }
+    Mod+Shift+9 { move-column-to-workspace 9; }
+
+    // Utilities
+    Mod+Shift+S { screenshot; }
+    Mod+Shift+E { quit; }
+    Mod+Escape { toggle-keyboard-shortcuts-inhibit; }
+    Print { screenshot; }
+}
+KDL
+
+# WAYBAR
+cat > ~/.config/waybar/config.jsonc <<'JSON'
+{
+  "layer": "top",
+  "position": "top",
+  "height": 32,
+  "spacing": 8,
+  "margin-top": 6,
+  "margin-left": 8,
+  "margin-right": 8,
+  "modules-left": ["niri/workspaces", "niri/window"],
+  "modules-center": ["clock"],
+  "modules-right": ["cpu", "memory", "pulseaudio", "network", "battery", "tray"],
+
+  "niri/workspaces": {
+    "format": "{index}",
+    "disable-scroll": false
+  },
+  "niri/window": {
+    "format": "{}",
+    "max-length": 45
+  },
+  "clock": {
+    "format": "  {:%a %d %b}     {:%H:%M}",
+    "tooltip": true,
+    "format-alt": "{:%Y-%m-%d %H:%M:%S}"
+  },
+  "cpu": {
+    "format": "CPU {usage}%"
+  },
+  "memory": {
+    "format": "RAM {}%"
+  },
+  "pulseaudio": {
+    "format": "VOL {volume}%",
+    "format-muted": "MUTE",
+    "on-click": "pavucontrol"
+  },
+  "network": {
+    "format-wifi": "WIFI {signalStrength}%",
+    "format-ethernet": "LAN",
+    "format-disconnected": "OFFLINE",
+    "tooltip": true
+  },
+  "battery": {
+    "format": "BAT {capacity}%",
+    "format-charging": "CHG {capacity}%"
+  },
+  "tray": {
+    "spacing": 8
+  }
+}
+JSON
+
+cat > ~/.config/waybar/style.css <<'CSS'
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 12px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: transparent;
+    color: #dbeafe;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+    background: #0b1220;
+    border: 1px solid #233453;
+    border-radius: 10px;
+    padding: 3px 8px;
+}
+
+#workspaces button {
+    color: #94a3b8;
+    background: transparent;
+    border-radius: 7px;
+    padding: 0 8px;
+}
+
+#workspaces button.active {
+    color: #07111f;
+    background: #60a5fa;
+}
+
+#workspaces button:hover {
+    background: #1e3a5f;
+    color: #ffffff;
+}
+
+#clock {
+    color: #93c5fd;
+    font-weight: bold;
+}
+
+#cpu, #memory, #pulseaudio, #network, #battery, #tray {
+    padding: 0 5px;
+}
+
+#battery.warning {
+    color: #fbbf24;
+}
+
+#battery.critical {
+    color: #f87171;
+}
+CSS
+
+# ROFI
+cat > ~/.config/rofi/config.rasi <<'RASI'
+configuration {
+    modi: "drun,run";
+    show-icons: true;
+    display-drun: "Apps";
+    display-run: "Run";
+    drun-display-format: "{name}";
+    font: "JetBrainsMono Nerd Font 12";
+}
+
+@theme "~/.config/rofi/theme.rasi"
+RASI
+
+cat > ~/.config/rofi/theme.rasi <<'RASI'
+* {
+    bg: #080d19;
+    panel: #0d1728;
+    blue: #60a5fa;
+    text: #dbeafe;
+    muted: #8296b5;
+    border: #263d60;
+}
+
+window {
+    width: 40%;
+    background-color: @bg;
+    border: 1px;
+    border-color: @border;
+    border-radius: 14px;
+    padding: 18px;
+}
+
+mainbox {
+    background-color: transparent;
+    children: [inputbar, listview];
+    spacing: 14px;
+}
+
+inputbar {
+    background-color: @panel;
+    border: 1px;
+    border-color: @border;
+    border-radius: 9px;
+    padding: 12px;
+    children: [prompt, entry];
+    spacing: 10px;
+}
+
+prompt {
+    text-color: @blue;
+}
+
+entry {
+    text-color: @text;
+    placeholder: "Search applications...";
+    placeholder-color: @muted;
+}
+
+listview {
+    columns: 1;
+    lines: 7;
+    fixed-height: false;
+    background-color: transparent;
+    spacing: 5px;
+}
+
+element {
+    background-color: transparent;
+    text-color: @text;
+    border-radius: 8px;
+    padding: 9px;
+    spacing: 10px;
+}
+
+element selected {
+    background-color: #193353;
+    text-color: #ffffff;
+    border: 1px;
+    border-color: @blue;
+}
+
+element-icon {
+    size: 24px;
+}
+
+element-text {
+    text-color: inherit;
+    vertical-align: 0.5;
+}
+RASI
+
+# KITTY
+cat > ~/.config/kitty/kitty.conf <<'KITTY'
+font_family JetBrainsMono Nerd Font
+font_size 11.5
+background #080d19
+foreground #dbeafe
+selection_background #26466f
+selection_foreground #ffffff
+cursor #60a5fa
+cursor_text_color #080d19
+url_color #93c5fd
+
+color0  #101827
+color1  #f87171
+color2  #86efac
+color3  #fbbf24
+color4  #60a5fa
+color5  #c4b5fd
+color6  #67e8f9
+color7  #dbeafe
+color8  #526581
+color9  #fca5a5
+color10 #bbf7d0
+color11 #fde68a
+color12 #93c5fd
+color13 #ddd6fe
+color14 #a5f3fc
+color15 #ffffff
+
+confirm_os_window_close 0
+enable_audio_bell no
+KITTY
+
+echo "Configuration files written."
+echo "Backup location: $backup"
+echo "Validating Niri config..."
+
+if niri validate; then
+    echo "Config is valid. Reloading Niri..."
+    niri msg action load-config-file
+else
+    echo "Validation failed. Your backup is preserved."
+    echo "Check the error above before reloading."
+    exit 1
+fi
+

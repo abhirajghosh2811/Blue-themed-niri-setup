@@ -1,0 +1,80 @@
+
+{
+    "layer": "top",
+    "position": "top",
+    "height": 38,
+    "spacing": 6,
+    "margin-top": 8,
+    "margin-left": 12,
+    "margin-right": 12,
+
+    "modules-left": [
+        "niri/workspaces",
+        "niri/window"
+    ],
+
+    "modules-center": [
+        "clock"
+    ],
+
+    "modules-right": [
+        "cpu",
+        "memory",
+        "pulseaudio",
+        "network",
+        "battery",
+        "tray",
+    ],
+
+    "niri/workspaces": {
+        "format": "{index}",
+        "disable-scroll": false
+    },
+
+    "niri/window": {
+        "format": "{}",
+        "max-length": 35
+    },
+
+    "clock": {
+        "format": "  {:%H:%M  |  %d %b}",
+        "tooltip": true,
+        "interval": 60
+    },
+
+    "cpu": {
+        "format": "  {usage}%",
+        "interval": 2
+    },
+
+    "memory": {
+        "format": "󰍛  {percentage}%",
+        "interval": 5
+    },
+
+    "pulseaudio": {
+        "format": "󰕾  {volume}%",
+        "format-muted": "󰖁  Muted",
+        "on-click": "pavucontrol"
+    },
+
+    "network": {
+        "format-wifi": "󰤨  {essid}",
+        "format-ethernet": "󰈀  Connected",
+        "format-disconnected": "󰤭  Offline",
+        "tooltip": true
+    },
+
+    "battery": {
+        "format": "󰁹  {capacity}%",
+        "format-charging": "󰂄  {capacity}%",
+        "states": {
+            "warning": 30,
+            "critical": 15
+        }
+    },
+
+    "tray": {
+        "spacing": 10
+    }
+}
